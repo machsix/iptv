@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 */2 * * *'        # 每 2 小时触发（UTC）
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -21,7 +24,7 @@ jobs:
           set -e
           echo "🎵 开始下载 IPTV 播放列表..."
 
-          base="https://mursor.ottiptv.cc"
+          base="https://sub.ottiptv.cc"
           files=("iptv.m3u" "yylunbo.m3u" "huyayqk.m3u" "douyuyqk.m3u" "bililive.m3u")
 
           # ---- 只在下载成功后才覆盖原文件 ----
@@ -55,6 +58,7 @@ jobs:
           # 下载所有文件
           for f in "${files[@]}"; do
             download_with_retry "${base}/${f}?token=${TOKEN}" "$f" || true
+            sed -i 's#https://mursor.ottiptv.cc#http://iptv.nas.lan#g' "$f"
           done
 
           echo "📊 文件下载状态："
